@@ -10,13 +10,14 @@ import android.hardware.Camera.PictureCallback;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import com.baebae.reactnativecamera.cameralib.barcode.Scan;
 import com.baebae.reactnativecamera.cameralib.helpers.CameraHandlerThread;
 import com.baebae.reactnativecamera.cameralib.helpers.CameraUtils;
-import com.baebae.reactnativecamera.cameralib.helpers.DisplayUtils;
+import com.google.zxing.Result;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -28,30 +29,35 @@ public class CameraPreviewLayout extends FrameLayout implements Camera.PreviewCa
     private Boolean mFlashState;
     private boolean mAutofocusState = true;
     private Scan barcodeScanner = null;
-
+    private RelativeLayout cameraLayout = null;
     protected String captureFileName = "";
     public CameraPreviewLayout(Context context) {
         super(context);
-    }
-
-    public CameraPreviewLayout(Context context, AttributeSet attributeSet) {
-        super(context, attributeSet);
+        barcodeScanner = new Scan(getContext());
     }
 
     public final void setupLayout(Camera camera) {
-        removeAllViews();
+        //removeAllViews();
 
-        barcodeScanner = new Scan(getContext());
         mPreview = new CameraView(getContext(), camera, this);
-        RelativeLayout relativeLayout = new RelativeLayout(getContext());
-        relativeLayout.setGravity(Gravity.CENTER);
-        relativeLayout.setBackgroundColor(Color.BLACK);
-        relativeLayout.addView(mPreview);
-        addView(relativeLayout);
-        addView((View) barcodeScanner.getViewFinder());
+        if (cameraLayout != null) {
+            removeView(cameraLayout);
+        }
+        cameraLayout = new RelativeLayout(getContext());
+        cameraLayout.setGravity(Gravity.CENTER);
+        cameraLayout.setBackgroundColor(Color.BLACK);
+        cameraLayout.addView(mPreview);
+        addView(cameraLayout);
+        moveToBack(cameraLayout);
 
     }
-
+    private void moveToBack(View currentView) {
+        ViewGroup viewGroup = ((ViewGroup) currentView.getParent());
+        int index = viewGroup.indexOfChild(currentView);
+        for(int i = 0; i<index; i++) {
+            viewGroup.bringChildToFront(viewGroup.getChildAt(i));
+        }
+    }
     public void startCamera(int cameraId) {
         if(mCameraHandlerThread == null) {
             mCameraHandlerThread = new CameraHandlerThread(this);
@@ -63,7 +69,6 @@ public class CameraPreviewLayout extends FrameLayout implements Camera.PreviewCa
         mCamera = camera;
         if(mCamera != null) {
             setupLayout(mCamera);
-            barcodeScanner.getViewFinder().setupViewFinder();
             if(mFlashState != null) {
                 setFlash(mFlashState);
             }
@@ -102,22 +107,7 @@ public class CameraPreviewLayout extends FrameLayout implements Camera.PreviewCa
 
     public void setFlash(boolean flag) {
         mFlashState = flag;
-        if(mCamera != null && CameraUtils.isFlashSupported(mCamera)) {
-
-            Camera.Parameters parameters = mCamera.getParameters();
-            if(flag) {
-                if(parameters.getFlashMode().equals(Camera.Parameters.FLASH_MODE_TORCH)) {
-                    return;
-                }
-                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-            } else {
-                if(parameters.getFlashMode().equals(Camera.Parameters.FLASH_MODE_OFF)) {
-                    return;
-                }
-                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-            }
-            mCamera.setParameters(parameters);
-        }
+        toggleTorch(flag);
     }
 
     public boolean getFlash() {
@@ -132,10 +122,10 @@ public class CameraPreviewLayout extends FrameLayout implements Camera.PreviewCa
         return false;
     }
 
-    public void toggleFlash() {
+    public void toggleTorch(boolean flagTorch) {
         if(mCamera != null && CameraUtils.isFlashSupported(mCamera)) {
             Camera.Parameters parameters = mCamera.getParameters();
-            if(parameters.getFlashMode().equals(Camera.Parameters.FLASH_MODE_TORCH)) {
+            if(!flagTorch) {
                 parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
             } else {
                 parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
@@ -154,7 +144,7 @@ public class CameraPreviewLayout extends FrameLayout implements Camera.PreviewCa
     protected void onImageFileSaved() {
     }
 
-    protected void onBarcodeScanned(String str) {
+    protected void onBarcodeScanned(Result str) {
 
     }
 
@@ -166,8 +156,8 @@ public class CameraPreviewLayout extends FrameLayout implements Camera.PreviewCa
         int height = size.height;
         barcodeScanner.scanImage(data, width, height, new Scan.ResultCallback() {
             @Override
-            public void onDecodeBarcode(String str) {
-                onBarcodeScanned(str);
+            public void onDecodeBarcode(Result result) {
+                onBarcodeScanned(result);
             }
         });
     }

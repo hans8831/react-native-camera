@@ -1,13 +1,16 @@
 package com.baebae.reactnativecamera;
 
 import android.support.annotation.Nullable;
+import android.view.View;
 
 import com.facebook.react.uimanager.ReactProp;
-import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.uimanager.ViewGroupManager;
 
-public class CameraViewManager extends SimpleViewManager<CameraView> {
+import java.util.Map;
+
+public class CameraViewManager extends ViewGroupManager<CameraView> {
     public static final String REACT_CLASS = "CameraViewAndroid";
     private ReactApplicationContext reactApplicationContext = null;
     private CameraView cameraView = null;
@@ -38,8 +41,17 @@ public class CameraViewManager extends SimpleViewManager<CameraView> {
         }
     }
 
+    @ReactProp(name = "torchMode")
+    public void toggleTorch(CameraView view, @Nullable String flagValue) {
+        if (flagValue.equals("true")) {
+            view.toggleTorch(true);
+        } else if (flagValue.equals("false")) {
+            view.toggleTorch(false);
+        }
+    }
+
     @Override
-    public void updateExtraData(CameraView view, Object props) {
-        super.updateExtraData(view, props);
+    public void addView(CameraView parent, View child, int index) {
+        parent.addView(child, index);
     }
 }

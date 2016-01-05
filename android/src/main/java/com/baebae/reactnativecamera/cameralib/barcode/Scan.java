@@ -2,7 +2,6 @@ package com.baebae.reactnativecamera.cameralib.barcode;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.graphics.Rect;
 import android.util.Log;
 
 import com.baebae.reactnativecamera.cameralib.helpers.DisplayUtils;
@@ -13,7 +12,6 @@ import com.google.zxing.BinaryBitmap;
 import com.google.zxing.DecodeHintType;
 import com.google.zxing.MultiFormatReader;
 import com.google.zxing.PlanarYUVLuminanceSource;
-import com.google.zxing.ReaderException;
 import com.google.zxing.Result;
 import com.google.zxing.common.HybridBinarizer;
 
@@ -29,12 +27,10 @@ import java.util.Map;
 
 public class Scan {
     public interface ResultCallback {
-        void onDecodeBarcode(String str);
+        void onDecodeBarcode(Result str);
     };
     private MultiFormatReader mMultiFormatReader;
     private Context appContext = null;
-    private IViewFinder mViewFinderView;
-    private Rect mFramingRectInPreview;
 
     public static final List<BarcodeFormat> ALL_FORMATS = new ArrayList<BarcodeFormat>();
     private List<BarcodeFormat> mFormats;
@@ -58,7 +54,6 @@ public class Scan {
     public Scan(Context context) {
         this.appContext = context;
         initMultiFormatReader();
-        mViewFinderView = createViewFinderView(context);
     }
 
     /**
@@ -70,10 +65,6 @@ public class Scan {
      */
     protected IViewFinder createViewFinderView(Context context) {
         return new ViewFinderView(context);
-    }
-
-    public IViewFinder getViewFinder() {
-        return mViewFinderView;
     }
 
     public Collection<BarcodeFormat> getFormats() {
@@ -129,9 +120,8 @@ public class Scan {
             final Result finalRawResult = rawResult;
 
             if (finalRawResult != null) {
-                String str = finalRawResult.getText();
                 if (callback != null) {
-                    callback.onDecodeBarcode(str);
+                    callback.onDecodeBarcode(finalRawResult);
                 }
             }
         } catch(RuntimeException e) {
@@ -140,10 +130,6 @@ public class Scan {
     }
 
     public PlanarYUVLuminanceSource buildLuminanceSource(byte[] data, int width, int height) {
-        Rect rect = getFramingRectInPreview(width, height);
-        if (rect == null) {
-            return null;
-        }
         // Go ahead and assume it's YUV rather than die.
         PlanarYUVLuminanceSource source = null;
 
@@ -154,25 +140,4 @@ public class Scan {
 
         return source;
     }
-
-    public synchronized Rect getFramingRectInPreview(int previewWidth, int previewHeight) {
-        if (mFramingRectInPreview == null) {
-            Rect framingRect = mViewFinderView.getFramingRect();
-            int viewFinderViewWidth = mViewFinderView.getWidth();
-            int viewFinderViewHeight = mViewFinderView.getHeight();
-            if (framingRect == null || viewFinderViewWidth == 0 || viewFinderViewHeight == 0) {
-                return null;
-            }
-
-            Rect rect = new Rect(framingRect);
-            rect.left = rect.left * previewWidth / viewFinderViewWidth;
-            rect.right = rect.right * previewWidth / viewFinderViewWidth;
-            rect.top = rect.top * previewHeight / viewFinderViewHeight;
-            rect.bottom = rect.bottom * previewHeight / viewFinderViewHeight;
-
-            mFramingRectInPreview = rect;
-        }
-        return mFramingRectInPreview;
-    }
-
 }

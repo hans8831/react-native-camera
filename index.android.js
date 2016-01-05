@@ -32,6 +32,12 @@ class AndroidCameraView extends React.Component {
     })
   }
 
+  toggleTorch() {
+    this._root.setNativeProps({
+      toggleTorch: "true"
+    })
+  }
+
   render() {
     return (
       <NativeAndroidCameraView

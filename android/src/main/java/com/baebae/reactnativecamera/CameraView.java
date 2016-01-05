@@ -9,6 +9,8 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.google.zxing.Result;
+
 public class CameraView extends CameraPreviewLayout implements LifecycleEventListener{
 
     public CameraView(ThemedReactContext context) {
@@ -67,13 +69,34 @@ public class CameraView extends CameraPreviewLayout implements LifecycleEventLis
                 "topChange",
                 event
         );
+
+        stopCamera();
+        startCamera();
     }
 
     @Override
-    protected void onBarcodeScanned(String barcodeResult) {
+    protected void onBarcodeScanned(Result barcodeResult) {
         super.onBarcodeScanned(barcodeResult);
         WritableMap event = Arguments.createMap();
-        event.putString("message", barcodeResult);
+
+        WritableMap message = Arguments.createMap();
+        message.putString("data", barcodeResult.getText());
+        message.putString("type", barcodeResult.getBarcodeFormat().name());
+
+        WritableMap bounds = Arguments.createMap();
+        WritableMap origin = Arguments.createMap();
+        origin.putDouble("x", barcodeResult.getResultPoints()[0].getX());
+        origin.putDouble("y", barcodeResult.getResultPoints()[0].getY());
+
+        WritableMap size = Arguments.createMap();
+        size.putDouble("height", Math.abs(barcodeResult.getResultPoints()[0].getY() - barcodeResult.getResultPoints()[1].getY()));
+        size.putDouble("width", Math.abs(barcodeResult.getResultPoints()[0].getX() - barcodeResult.getResultPoints()[1].getX()));
+
+        bounds.putMap("origin", origin);
+        bounds.putMap("size", size);
+
+        message.putMap("bounds", bounds);
+        event.putMap("message", message);
         event.putString("type", "barcode_capture");
         ReactContext reactContext = (ReactContext)getContext();
         reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
