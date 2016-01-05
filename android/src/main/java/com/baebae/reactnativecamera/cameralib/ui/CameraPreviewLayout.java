@@ -54,7 +54,7 @@ public class CameraPreviewLayout extends FrameLayout implements Camera.PreviewCa
     private void moveToBack(View currentView) {
         ViewGroup viewGroup = ((ViewGroup) currentView.getParent());
         int index = viewGroup.indexOfChild(currentView);
-        for(int i = 0; i<index; i++) {
+        for (int i = 0; i < index; i++) {
             viewGroup.bringChildToFront(viewGroup.getChildAt(i));
         }
     }
@@ -69,9 +69,14 @@ public class CameraPreviewLayout extends FrameLayout implements Camera.PreviewCa
         mCamera = camera;
         if(mCamera != null) {
             setupLayout(mCamera);
-            if(mFlashState != null) {
-                setFlash(mFlashState);
-            }
+            postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if(mFlashState != null) {
+                        setFlash(mFlashState);
+                    }
+                }
+            }, 1000);
             setAutoFocus(mAutofocusState);
         }
     }

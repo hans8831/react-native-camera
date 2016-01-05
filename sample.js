@@ -19,14 +19,14 @@ var {
 
 var Camera = React.createClass({
   cameraView: null,
+  toggleMode: true,
   render: function() {
     return (
       <View style={styles.container}>
         <CameraView
             ref={(cameraView)=>{this.cameraView = cameraView;}}
             style={styles.cameraView}
-            fileName="capture"
-            torchMode="true"
+            torchMode={this.toggleMode}
             onBarCodeRead={(result) => {
                 Alert.alert("Barcode Captured", JSON.stringify(result));
             }}
@@ -39,7 +39,8 @@ var Camera = React.createClass({
               <TouchableOpacity
                   style={styles.touchableContainer}
                   onPress={() => {
-                  this.cameraView.toggleTorch();
+                    this.toggleMode = !this.toggleMode;
+                    this.cameraView.toggleTorch(this.toggleMode);
                 }}>
                 <Image style={styles.bottom_logo}
                        source={require('image!img_logo')} />

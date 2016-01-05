@@ -32,9 +32,9 @@ class AndroidCameraView extends React.Component {
     })
   }
 
-  toggleTorch() {
+  toggleTorch(mode) {
     this._root.setNativeProps({
-      toggleTorch: "true"
+      torchMode: mode
     })
   }
 
@@ -50,14 +50,14 @@ class AndroidCameraView extends React.Component {
 
 AndroidCameraView.propTypes = {
   ...View.propTypes,
-  fileName: PropTypes.string,
   startCapture: PropTypes.string,
-  onBarCodeRead: PropTypes.func
+  onBarCodeRead: PropTypes.func,
+  torchMode:PropTypes.bool,
 };
 
 AndroidCameraView.defaultProps = {
-  fileName: "test",
-  onBarCodeRead: null
+  onBarCodeRead: null,
+  torchMode: true
 }
 
 module.exports = AndroidCameraView;
