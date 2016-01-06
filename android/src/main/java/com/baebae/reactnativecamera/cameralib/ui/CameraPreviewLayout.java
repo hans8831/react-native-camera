@@ -117,8 +117,10 @@ public class CameraPreviewLayout extends FrameLayout implements Camera.PreviewCa
     }
 
     public void setFlash(boolean flag) {
-        mFlashState = flag;
-        toggleTorch(flag);
+        if(mCamera != null) {
+            mFlashState = flag;
+            toggleTorch(flag);
+        }
     }
 
     public boolean getFlash() {
