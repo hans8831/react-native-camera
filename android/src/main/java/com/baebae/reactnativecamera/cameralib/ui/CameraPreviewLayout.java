@@ -31,6 +31,7 @@ public class CameraPreviewLayout extends FrameLayout implements Camera.PreviewCa
     private boolean mAutofocusState = true;
     private Scan barcodeScanner = null;
     private RelativeLayout cameraLayout = null;
+    private CameraInstanceManager cameraInstanceManager;
     protected String captureFileName = "";
 
     public CameraPreviewLayout(Context context, CameraInstanceManager cameraInstanceManager) {

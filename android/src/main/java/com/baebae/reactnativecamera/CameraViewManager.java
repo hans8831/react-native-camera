@@ -19,6 +19,7 @@ public class CameraViewManager extends ViewGroupManager<CameraView> {
     public static final String REACT_CLASS = "CameraViewAndroid";
     private ReactApplicationContext reactApplicationContext = null;
     private CameraView cameraView = null;
+    private CameraInstanceManager cameraInstanceManager;
 
     public CameraViewManager(ReactApplicationContext reactApplicationContext, CameraInstanceManager cameraInstanceManager) {
         this.reactApplicationContext = reactApplicationContext;
