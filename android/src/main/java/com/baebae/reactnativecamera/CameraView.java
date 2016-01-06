@@ -1,10 +1,10 @@
 package com.baebae.reactnativecamera;
 
-
 import com.baebae.reactnativecamera.cameralib.helpers.FileUtils;
+import com.baebae.reactnativecamera.cameralib.helpers.CameraInstanceManager;
+import com.baebae.reactnativecamera.cameralib.ui.CameraPreviewLayout;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.baebae.reactnativecamera.cameralib.ui.CameraPreviewLayout;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
@@ -13,8 +13,8 @@ import com.google.zxing.Result;
 
 public class CameraView extends CameraPreviewLayout implements LifecycleEventListener{
 
-    public CameraView(ThemedReactContext context) {
-        super(context);
+    public CameraView(ThemedReactContext context, CameraInstanceManager cameraInstanceManager) {
+        super(context, cameraInstanceManager);
         context.addLifecycleEventListener(this);
     }
 

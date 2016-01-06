@@ -11,7 +11,13 @@ import java.util.Arrays;
 import java.util.List;
 
 public class CameraViewPackage implements ReactPackage {
-    CameraViewManager cameraViewManager = null;
+    private CameraViewManager cameraViewManager = null;
+    private CameraInstanceManager cameraInstanceManager;
+
+    public CameraViewPackage(Activity mainActivity) {
+        this.cameraInstanceManager = new CameraInstanceManager();
+    }
+
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactApplicationContext) {
         return new ArrayList<>();
@@ -19,7 +25,7 @@ public class CameraViewPackage implements ReactPackage {
 
     @Override
     public List<ViewManager> createViewManagers(ReactApplicationContext reactApplicationContext) {
-        cameraViewManager = new CameraViewManager(reactApplicationContext);
+        cameraViewManager = new CameraViewManager(reactApplicationContext, cameraInstanceManager);
         return Arrays.<ViewManager>asList(
                 cameraViewManager
         );

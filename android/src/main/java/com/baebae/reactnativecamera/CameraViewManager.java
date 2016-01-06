@@ -1,5 +1,7 @@
 package com.baebae.reactnativecamera;
 
+import com.baebae.reactnativecamera.cameralib.helpers.CameraInstanceManager;
+
 import android.support.annotation.Nullable;
 import android.view.View;
 
@@ -17,9 +19,12 @@ public class CameraViewManager extends ViewGroupManager<CameraView> {
     public static final String REACT_CLASS = "CameraViewAndroid";
     private ReactApplicationContext reactApplicationContext = null;
     private CameraView cameraView = null;
-    public CameraViewManager(ReactApplicationContext reactApplicationContext) {
+
+    public CameraViewManager(ReactApplicationContext reactApplicationContext, CameraInstanceManager cameraInstanceManager) {
         this.reactApplicationContext = reactApplicationContext;
+        this.cameraInstanceManager = cameraInstanceManager;
     }
+
     @Override
     public String getName() {
         return REACT_CLASS;
@@ -27,7 +32,7 @@ public class CameraViewManager extends ViewGroupManager<CameraView> {
 
     @Override
     protected CameraView createViewInstance(ThemedReactContext context) {
-        cameraView = new CameraView(context);
+        cameraView = new CameraView(context, cameraInstanceManager);
         cameraView.startCamera();
         return cameraView;
     }

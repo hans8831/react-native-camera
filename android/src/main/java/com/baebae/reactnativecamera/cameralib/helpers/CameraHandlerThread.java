@@ -1,6 +1,5 @@
 package com.baebae.reactnativecamera.cameralib.helpers;
 
-
 import android.hardware.Camera;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -20,12 +19,11 @@ public class CameraHandlerThread extends HandlerThread {
         start();
     }
 
-    public void startCamera(final int cameraId) {
+    public void startCamera(final Camera camera) {
         Handler localHandler = new Handler(getLooper());
         localHandler.post(new Runnable() {
             @Override
             public void run() {
-                final Camera camera = CameraUtils.getCameraInstance(cameraId);
                 Handler mainHandler = new Handler(Looper.getMainLooper());
                 mainHandler.post(new Runnable() {
                     @Override

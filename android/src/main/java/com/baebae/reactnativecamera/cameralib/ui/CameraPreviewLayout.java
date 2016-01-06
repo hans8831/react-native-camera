@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 import com.baebae.reactnativecamera.cameralib.barcode.Scan;
 import com.baebae.reactnativecamera.cameralib.helpers.CameraHandlerThread;
 import com.baebae.reactnativecamera.cameralib.helpers.CameraUtils;
+import com.baebae.reactnativecamera.cameralib.helpers.CameraInstanceManager;
 import com.google.zxing.Result;
 
 import java.io.File;
@@ -31,9 +32,11 @@ public class CameraPreviewLayout extends FrameLayout implements Camera.PreviewCa
     private Scan barcodeScanner = null;
     private RelativeLayout cameraLayout = null;
     protected String captureFileName = "";
-    public CameraPreviewLayout(Context context) {
+
+    public CameraPreviewLayout(Context context, CameraInstanceManager cameraInstanceManager) {
         super(context);
         barcodeScanner = new Scan(getContext());
+        this.cameraInstanceManager = cameraInstanceManager;
     }
 
     public final void setupLayout(Camera camera) {
@@ -49,8 +52,8 @@ public class CameraPreviewLayout extends FrameLayout implements Camera.PreviewCa
         cameraLayout.addView(mPreview);
         addView(cameraLayout);
         moveToBack(cameraLayout);
-
     }
+
     private void moveToBack(View currentView) {
         ViewGroup viewGroup = ((ViewGroup) currentView.getParent());
         int index = viewGroup.indexOfChild(currentView);
@@ -58,11 +61,13 @@ public class CameraPreviewLayout extends FrameLayout implements Camera.PreviewCa
             viewGroup.bringChildToFront(viewGroup.getChildAt(i));
         }
     }
+
     public void startCamera(int cameraId) {
         if(mCameraHandlerThread == null) {
             mCameraHandlerThread = new CameraHandlerThread(this);
         }
-        mCameraHandlerThread.startCamera(cameraId);
+        Camera camera = cameraInstanceManager.getCamera("back");
+        mCameraHandlerThread.startCamera(camera);
     }
 
     public void setupCameraPreview(Camera camera) {
