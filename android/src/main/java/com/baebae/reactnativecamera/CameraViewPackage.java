@@ -16,7 +16,7 @@ public class CameraViewPackage implements ReactPackage {
     private CameraViewManager cameraViewManager = null;
     private CameraInstanceManager cameraInstanceManager;
 
-    public CameraViewPackage(Activity mainActivity) {
+    public CameraViewPackage() {
         this.cameraInstanceManager = new CameraInstanceManager();
     }
 
